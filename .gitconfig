@@ -1,0 +1,26 @@
+[user]
+	name = Bulat Cherkashyn
+	email = bulatcherkashyn@gmail.com
+	signingkey = E152A02153DDEC8F
+[init]
+	defaultBranch = main
+[core]
+	editor = nvim
+    pager = delta
+[commit]
+	gpgsign = true
+
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    features = my-dark-theme zebra-dark
+    navigate = true    # use n and N to move between diff sections
+	side-by-side = true
+	line-numbers = true
+    # delta detects terminal colors automatically; set one of these to disable auto-detection
+    # dark = true
+    # light = true
+[merge]
+    conflictstyle = diff3
+[diff]
+    colorMoved = default
