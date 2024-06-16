@@ -7,7 +7,11 @@ return {
 	config = function()
 		local cmp_nvim_lsp = require("cmp_nvim_lsp")
 		local capabilities = cmp_nvim_lsp.default_capabilities()
+		local lspui = require("lspconfig.ui.windows")
 		vim.cmd([[autocmd BufWritePre * lua vim.lsp.buf.format()]])
+
+		lspui.default_options.border = "double"
+
 		require('lspconfig').lua_ls.setup({
 			capabilities = capabilities,
 			settings = {
@@ -24,6 +28,16 @@ return {
 		})
 		require('lspconfig').eslint.setup({
 			capabilities = capabilities,
+		})
+		require('lspconfig').html.setup({
+			capabilities = capabilities,
+		})
+		require('lspconfig').rust_analyzer.setup({
+			capabilities = capabilities,
+			-- Server-specific settings. See `:help lspconfig-setup`
+			settings = {
+				["rust-analyzer"] = {},
+			},
 		})
 	end
 }
