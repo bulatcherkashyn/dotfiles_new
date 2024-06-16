@@ -6,6 +6,7 @@ local plugins = {
 	require("plugins.telescope"),
 	require("plugins.treesiter"),
 	require("plugins.mason"),
+	require("plugins.lspconfig"),
 	{
 		"rcarriga/nvim-notify"
 	}
