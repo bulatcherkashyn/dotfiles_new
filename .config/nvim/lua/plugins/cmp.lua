@@ -26,7 +26,9 @@ M.config = function()
 				border = "double",
 				winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,CursorLine:PmenuThumb,Search:None"
 			}),
-			documentation = cmp.config.window.bordered(),
+			documentation = cmp.config.window.bordered({
+				border = "double",
+			}),
 		},
 		mapping = cmp.mapping.preset.insert({
 			["<C-b>"] = cmp.mapping.scroll_docs(-4),
