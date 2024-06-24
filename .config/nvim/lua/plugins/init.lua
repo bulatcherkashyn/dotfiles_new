@@ -10,6 +10,11 @@ local plugins = {
   require("plugins.autotag"),
   require("plugins.gitsign"),
   require("plugins.mason"),
+  require("plugins.surround"),
+  require("plugins.trouble"),
+  require("plugins.dap"),
+  require("plugins.neodev"),
+  require("plugins.dap-ui"),
   require("plugins.lspconfig"),
   {
     "rcarriga/nvim-notify"

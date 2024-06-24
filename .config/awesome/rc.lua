@@ -127,7 +127,8 @@ local browser2                         = "firefox"
 local browser3                         = "chromium -no-default-browser-check"
 local editor                           = os.getenv("EDITOR") or "nano"
 local editorgui                        = "atom"
-local filemanager                      = "thunar"
+local filemanager                      = "yazi"
+--local filemanager                      = "thunar"
 local mailclient                       = "evolution"
 local mediaplayer                      = "spotify"
 local terminal                         = "alacritty"
@@ -370,8 +371,14 @@ globalkeys = my_table.join(
     { description = "conky killall", group = "super" }),
   awful.key({ modkey }, "e", function() awful.util.spawn(editorgui) end,
     { description = "run gui editor", group = "super" }),
-  --awful.key({ modkey }, "h", function () awful.util.spawn( "urxvt -T 'htop task manager' -e htop" ) end,
+  awful.key({ modkey }, "p", function() awful.util.spawn("alacritty -e htop") end,
+    { description = "htop", group = "super" }),
+  awful.key({ modkey, "Shift" }, "b", function() awful.util.spawn("alacritty -e btop") end,
+    { description = "htop", group = "super" }),
+  --
+  --awful.key({ modkey }, "H", function () awful.util.spawn( "urxvt -T 'htop task manager' -e htop" ) end,
   --{description = "htop", group = "super"}),
+  --
   awful.key({ modkey }, "r", function() awful.util.spawn("rofi-theme-selector") end,
     { description = "rofi theme selector", group = "super" }),
   awful.key({ modkey }, "t", function() awful.util.spawn(terminal) end,
@@ -388,7 +395,9 @@ globalkeys = my_table.join(
     { description = "Kill proces", group = "hotkeys" }),
 
   -- super + shift + ...
-  awful.key({ modkey, "Shift" }, "Return", function() awful.util.spawn(filemanager) end),
+  awful.key({ modkey, "Shift" }, "Return", function() awful.spawn.with_shell("alacritty -e yazi") end),
+  --  awful.spawn.with_shell("picom -b --config  $HOME/.config/awesome/picom.conf")
+  --awful.key({ modkey, "Shift" }, "Return", function() awful.util.spawn(filemanager) end),
 
 
   -- ctrl + shift + ...

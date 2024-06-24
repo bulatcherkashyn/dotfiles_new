@@ -50,5 +50,5 @@ vim.keymap.set("", "<up>", "<nop>", { noremap = true })
 vim.keymap.set("", "<down>", "<nop>", { noremap = true })
 vim.keymap.set("i", "<up>", "<nop>", { noremap = true })
 vim.keymap.set("i", "<down>", "<nop>", { noremap = true })
-vim.opt.mouse = ""
-vim.opt.mousescroll = "ver:0,hor:0"
+-- vim.opt.mouse = ""
+-- vim.opt.mousescroll = "ver:0,hor:0"
