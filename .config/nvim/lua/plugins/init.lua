@@ -1,7 +1,9 @@
 local plugins = {
+  require("plugins.whichkey"),
   require("plugins.fugfitive"),
   require("plugins.lualine"),
   require("plugins.todo-comments"),
+  require("plugins.cmp"),
   require("plugins.rose-pine"),
   require("plugins.telescope"),
   require("plugins.treesiter"),
