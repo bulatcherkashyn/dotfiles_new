@@ -1,7 +1,7 @@
 [user]
 	name = Bulat Cherkashyn
-	email = bulatcherkashyn@gmail.com
-	signingkey = E152A02153DDEC8F
+	email = bulatcherkashyn@tutamail.com
+	signingkey = DDA4385FC82CED57E01E801EE152A02153DDEC8F
 [init]
 	defaultBranch = main
 [core]

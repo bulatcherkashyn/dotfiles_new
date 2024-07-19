@@ -21,6 +21,7 @@ local plugins = {
   {
     "rcarriga/nvim-notify"
   },
+  require("plugins.oli-nvim"),
   {
     "lukas-reineke/indent-blankline.nvim",
     opts = {},
