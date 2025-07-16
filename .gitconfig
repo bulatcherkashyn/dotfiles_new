@@ -1,26 +1,36 @@
 [user]
 	name = Bulat Cherkashyn
-	email = bulatcherkashyn@tutamail.com
+	email = b.cherkashin@gamzix.com
 	signingkey = DDA4385FC82CED57E01E801EE152A02153DDEC8F
 [init]
 	defaultBranch = main
 [core]
 	editor = nvim
-    pager = delta
+	pager = delta
 [commit]
 	gpgsign = true
 
 [interactive]
-    diffFilter = delta --color-only
+	diffFilter = delta --color-only
 [delta]
-    features = my-dark-theme zebra-dark
-    navigate = true    # use n and N to move between diff sections
-	side-by-side = true
+    features = my-dark-theme dracula
+	navigate = true
 	line-numbers = true
+    hyperlinks = true
     # delta detects terminal colors automatically; set one of these to disable auto-detection
     # dark = true
     # light = true
 [merge]
-    conflictstyle = diff3
+	conflictStyle = zdiff3
 [diff]
     colorMoved = default
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[pull]
+	rebase = true
+[maintenance]
+	repo = /home/busyok/test/git-testing
