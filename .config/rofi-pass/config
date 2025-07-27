@@ -1,0 +1,14 @@
+# Example config
+# Clipboard timeout (seconds)
+clip=15
+
+# Auto-type delay (milliseconds)
+delay=12
+
+# Browser command
+BROWSER='firefox'
+
+# Custom key bindings
+autotype="Return"
+type_user="Alt+1"
+type_pass="Alt+2"
