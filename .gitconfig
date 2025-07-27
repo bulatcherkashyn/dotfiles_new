@@ -34,3 +34,5 @@
 	rebase = true
 [maintenance]
 	repo = /home/busyok/test/git-testing
+[gpg]
+	program = gpg
