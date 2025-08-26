@@ -21,10 +21,6 @@ local plugins = {
     require("plugins.trouble"),
     require("plugins.neodev"),
     require("plugins.lspconfig"),
-    require("plugins.cmdline"),
-    {
-        "rcarriga/nvim-notify"
-    },
     {
         "lukas-reineke/indent-blankline.nvim",
         opts = {},
@@ -55,7 +51,6 @@ local plugins = {
             require("ibl").setup { indent = { highlight = highlight } }
         end
     },
-    require("plugins.obsidian"),
     require("plugins.test"),
     {
         "nvim-neotest/neotest",
