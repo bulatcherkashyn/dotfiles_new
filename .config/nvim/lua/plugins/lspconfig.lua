@@ -4,9 +4,254 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-        "hrsh7th/cmp-nvim-lsp",
+        "saghen/blink.cmp",
+        "williamboman/mason-lspconfig.nvim",
+        "williamboman/mason.nvim",
+        "yioneko/nvim-vtsls"
     },
-    config = function()
+    opts = {},
+    config = function(_, opts)
+        local function organize_imports()
+            local params = {
+                command = "_typescript.organizeImports",
+                arguments = { vim.api.nvim_buf_get_name(0) },
+                title = "",
+            }
+            vim.lsp.buf.execute_command(params)
+        end
+        require("mason").setup()
+
+        require("mason-lspconfig").setup({
+            ensure_installed = { "lua_ls", "ts_ls", "eslint", "jsonls", "vtsls", "rescriptls", "biome" },
+        })
+
+        local blink = require("blink.cmp")
+        local lspconfig = require("lspconfig")
+
+        -- В вашей on_attach функции для LSP
+        local function setup_lsp_keymaps(client, bufnr)
+            local opts = { buffer = bufnr, silent = true }
+
+            -- Go to definition с fzf-lua
+            vim.keymap.set("n", "gd", function()
+                require('fzf-lua').lsp_definitions({ jump1 = true })
+            end, vim.tbl_extend("force", opts, { desc = "Go to Definition" }))
+
+            -- Go to declaration
+            vim.keymap.set("n", "gD", function()
+                require('fzf-lua').lsp_declarations({ jump1 = true })
+            end, vim.tbl_extend("force", opts, { desc = "Go to Declaration" }))
+
+            -- Go to implementation
+            vim.keymap.set("n", "gi", function()
+                require('fzf-lua').lsp_implementations({ jump1 = true })
+            end, vim.tbl_extend("force", opts, { desc = "Go to Implementation" }))
+
+            -- Go to type definition
+            vim.keymap.set("n", "gt", function()
+                require('fzf-lua').lsp_typedefs({ jump1 = true })
+            end, vim.tbl_extend("force", opts, { desc = "Go to Type Definition" }))
+
+            -- References
+            vim.keymap.set("n", "gr", function()
+                require('fzf-lua').lsp_references()
+            end, vim.tbl_extend("force", opts, { desc = "Show References" }))
+
+            -- Symbols
+            vim.keymap.set("n", "<leader>ls", function()
+                require('fzf-lua').lsp_document_symbols()
+            end, vim.tbl_extend("force", opts, { desc = "Document Symbols" }))
+
+            vim.keymap.set("n", "<leader>lS", function()
+                require('fzf-lua').lsp_workspace_symbols()
+            end, vim.tbl_extend("force", opts, { desc = "Workspace Symbols" }))
+
+            -- Diagnostics
+            vim.keymap.set("n", "<leader>ld", function()
+                require('fzf-lua').diagnostics_document()
+            end, vim.tbl_extend("force", opts, { desc = "Document Diagnostics" }))
+
+            vim.keymap.set("n", "<leader>lD", function()
+                require('fzf-lua').diagnostics_workspace()
+            end, vim.tbl_extend("force", opts, { desc = "Workspace Diagnostics" }))
+
+            -- Code actions
+            vim.keymap.set("n", "<leader>ca", function()
+                require('fzf-lua').lsp_code_actions()
+            end, vim.tbl_extend("force", opts, { desc = "Code Actions" }))
+
+            -- Incoming/Outgoing calls
+            vim.keymap.set("n", "<leader>lci", function()
+                require('fzf-lua').lsp_incoming_calls()
+            end, vim.tbl_extend("force", opts, { desc = "Incoming Calls" }))
+
+            vim.keymap.set("n", "<leader>lco", function()
+                require('fzf-lua').lsp_outgoing_calls()
+            end, vim.tbl_extend("force", opts, { desc = "Outgoing Calls" }))
+            vim.keymap.set("n", "<leader>oi", function()
+                require("vtsls").commands.organize_imports(bufnr)
+            end, vim.tbl_extend("force", opts, { desc = "Organize Imports" }))
+
+            vim.keymap.set("n", "<leader>ru", function()
+                require("vtsls").commands.remove_unused_imports(bufnr)
+            end, vim.tbl_extend("force", opts, { desc = "Remove Unused" }))
+        end
+        -- see a list of servers here: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
+        local function eslint_config_exists()
+            local eslintrc = vim.fn.glob("eslint.config.json", 0, 1)
+
+            if not vim.tbl_isempty(eslintrc) then
+                return true
+            end
+
+            if vim.fn.filereadable("package.json") then
+                if vim.fn.json_decode(vim.fn.readfile("package.json"))["eslintConfig"] then
+                    return true
+                end
+            end
+
+            return false
+        end
+        local servers = {
+            elmls = {},
+            rust_analyzer = {},
+            vtsls = {
+                on_attach = function(client, bufnr)
+                    setup_lsp_keymaps(client, bufnr)
+                end,
+            },
+            astro = {},
+            gleam = {},
+            lua_ls = {
+                settings = {
+                    Lua = {
+                        diagnostics = {
+                            globals = { "vim", "it", "describe", "before_each", "after_each" },
+                        },
+                    },
+                },
+            },
+            biome = {
+                on_attach = function(client, bufnr)
+                    vim.api.nvim_create_autocmd("BufWritePre", {
+                        buffer = bufnr,
+                        callback = function()
+                            vim.lsp.buf.format({
+                                filter = function(client)
+                                    return client.name == "biome"
+                                end,
+                            })
+                        end,
+                    })
+                end,
+            },
+            oxlint = {
+                on_attach = function(client, bufnr)
+                    vim.api.nvim_create_autocmd("BufWritePre", {
+                        buffer = bufnr,
+                        callback = function()
+                            vim.lsp.buf.format({
+                                filter = function(client)
+                                    return client.name == "oxlint"
+                                end,
+                            })
+                        end,
+                    })
+                end,
+            },
+            eslint = {
+                on_attach = function(client, bufnr)
+                    vim.api.nvim_create_autocmd("BufWritePre", {
+                        buffer = bufnr,
+                        command = "EslintFixAll",
+                    })
+                end,
+
+                root_dir = function()
+                    if not eslint_config_exists() then return nil end
+                    return vim.fn.getcwd()
+                end,
+            },
+            svelte = {},
+            jsonls = {},
+            elixirls = {},
+            denols = {
+                root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc"),
+                init_options = {
+                    lint = true,
+                    unstable = true, -- Enable unstable APIs (if needed)
+                    suggest = {
+                        imports = {
+                            hosts = {
+                                ["https://deno.land"] = true,
+                            },
+                        },
+                    },
+                },
+            },
+            gopls = {
+                settings = {
+                    gopls = {
+                        analyses = {
+                            unusedparams = true,
+                        },
+                        staticcheck = true,
+                        gofumpt = true,
+                    },
+                },
+            },
+            tailwindcss = {
+                settings = {
+                    tailwindCSS = {
+                        experimental = {
+                            classRegex = {
+                                { "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
+                                { "cx\\(([^)]*)\\)",  "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+                                { "cn\\(([^)]*)\\)",  "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+                            },
+                        },
+                    },
+                },
+            },
+        }
+
+        for server, config in pairs(servers) do
+            -- passing config.capabilities to blink.cmp merges with the capabilities in your
+            -- `server.capabilities, if you've defined it
+            config.capabilities = blink.get_lsp_capabilities(config.capabilities)
+            lspconfig[server].setup(config)
+        end
+
+        vim.diagnostic.config({
+            virtual_text = true,
+            signs = true,
+            underline = true,
+            update_in_insert = false,
+            severity_sort = false,
+        })
+
+        local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
+        for type, icon in pairs(signs) do
+            local hl = "DiagnosticSign" .. type
+            vim.diagnostic.config()
+        end
+
+        vim.api.nvim_create_autocmd("CursorHold", {
+            buffer = bufnr,
+            callback = function()
+                local opts = {
+                    focusable = false,
+                    close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+                    border = 'rounded',
+                    source = 'always',
+                    prefix = ' ',
+                    scope = 'cursor',
+                }
+                vim.diagnostic.open_float(nil, opts)
+            end
+        })
+
+
         local on_attach = function(client, bufnr)
             vim.diagnostic.config({
                 virtual_text = true,
@@ -56,185 +301,6 @@ return {
             buf_set_keymap('n', '<leader>ll', '<cmd>lua vim.lsp.codelens.run()<cr>', opts)
             client.server_capabilities.document_formatting = true
         end
-
-
-        local lspconfig = require("lspconfig")
-        require 'lspconfig'.gopls.setup({
-            settings = {
-                gopls = {
-                    analyses = {
-                        unusedparams = true,
-                    },
-                    staticcheck = true,
-                    gofumpt = true,
-                },
-            },
-        })
-        require("neodev").setup({
-            library = { plugins = { "nvim-dap-ui" }, types = true },
-        })
-        local cmp_nvim_lsp = require("cmp_nvim_lsp")
-        --
-        --local capabilities = cmp_nvim_lsp.default_capabilities()
-
-        local capabilities = vim.lsp.protocol.make_client_capabilities()
-        capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
-        capabilities.textDocument.completion.completionItem.snippetSupport = true
-
-        local lsp_flags = {
-            allow_incremental_sync = true,
-            debounce_text_changes = 150,
-        }
-
-        local lspui = require("lspconfig.ui.windows")
-        vim.cmd([[autocmd BufWritePre * lua vim.lsp.buf.format()]])
-
-        lspui.default_options.border = "double"
-
-
-        require('lspconfig').emmet_ls.setup {
-            on_attach = on_attach,
-            capabilities = capabilities,
-            flags = lsp_flags
-        }
-
-        require('lspconfig').lua_ls.setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-            settings = {
-                Lua = {
-                    diagnostics = {
-                        globals = { 'vim' }
-                    }
-                }
-            }
-        })
-
-        --require 'lspconfig'.biome.setup {}
-        require 'lspconfig'.rescriptls.setup {}
-
-        -- require 'lspconfig'.jsonls.setup {
-        -- filetypes = { "json" },
-        -- init_options = {
-        -- provideFormatter = true
-        -- },
-        -- commands = {
-        -- Format = {
-        -- function()
-        -- vim.lsp.buf.range_formatting({}, { 0, 0 }, { vim.fn.line("$"), 0 })
-        -- end
-        -- }
-        -- }
-        -- }
-
-        local function eslint_config_exists()
-            local eslintrc = vim.fn.glob("eslint.config.json", 0, 1)
-
-            if not vim.tbl_isempty(eslintrc) then
-                return true
-            end
-
-            if vim.fn.filereadable("package.json") then
-                if vim.fn.json_decode(vim.fn.readfile("package.json"))["eslintConfig"] then
-                    return true
-                end
-            end
-
-            return false
-        end
-
-        local function eslint_config_exists2()
-            -- Проверяем разные файлы конфигурации
-            local config_files = {
-                ".eslintrc.js",
-                ".eslintrc.json",
-                ".eslintrc.yaml",
-                ".eslintrc.yml",
-                "eslint.config.js",
-                "eslint.config.json"
-            }
-
-            for _, file in ipairs(config_files) do
-                if vim.fn.filereadable(file) == 1 then
-                    print(file)
-                    return true
-                end
-            end
-
-            -- Проверяем package.json
-            if vim.fn.filereadable("package.json") == 1 then
-                local ok, package_json = pcall(vim.fn.json_decode, vim.fn.readfile("package.json"))
-                if ok and package_json.eslintConfig then
-                    return true
-                end
-            end
-
-            return false
-        end
-
-        lspconfig.rust_analyzer.setup({
-            on_attach = on_attach,
-            settings = {
-                ["rust-analyzer"] = {
-                    imports = {
-                        granularity = {
-                            group = "module",
-                        },
-                        prefix = "self",
-                    },
-                    cargo = {
-                        buildScripts = {
-                            enable = true,
-                        },
-                    },
-                    procMacro = {
-                        enable = true
-                    },
-                }
-            }
-        })
-
-        require('lspconfig').rescriptls.setup {}
-
-        -- local eslint = {
-        -- lintCommand = "eslint_d -f unix --stdin --stdin-filename ${INPUT}",
-        -- lintStdin = true,
-        -- lintFormats = { "%f:%l:%c: %m" },
-        -- lintIgnoreExitCode = true,
-        -- formatCommand =
-        -- "eslint_d --fix-to-stdout --stdin --stdin-filename=${INPUT}",
-        -- formatStdin = true
-        -- }
-
-        -- lspconfig.efm.setup {
-        -- on_attach = function(client)
-        -- client.resolved_capabilities.document_formatting = true
-        -- client.resolved_capabilities.goto_definition = false
-        -- lspconfig.set_lsp_config(client)
-        -- end, root_dir = function()
-        -- if not eslint_config_exists() then return nil end
-        -- return vim.fn.getcwd()
-        -- end, settings = { languages = { javascript = { eslint }, javascriptreact = { eslint }, ["javascript.jsx"] = { eslint }, typescript = { eslint }, ["typescript.tsx"] = { eslint }, typescriptreact = { eslint } } }, filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescript.tsx", "typescriptreact" }, }
-
-        require('lspconfig').eslint.setup({
-            root_dir = function()
-                if not eslint_config_exists() then return nil end
-                return vim.fn.getcwd()
-            end,
-            on_attach = on_attach,
-            capabilities = capabilities,
-            settings = {
-
-            }
-
-        })
-
-        local servers = { "vtsls", "eslint", "tailwindcss", "html", };
-        for _, lsp in ipairs(servers) do
-            require('lspconfig')[lsp].setup({
-                on_attach = on_attach,
-                capabilities = capabilities,
-            })
-        end
     end
+
 }

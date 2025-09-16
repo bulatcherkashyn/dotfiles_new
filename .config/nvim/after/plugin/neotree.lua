@@ -1,1 +1,3 @@
-vim.keymap.set('n', '<leader>nt', vim.cmd.Neotree, {})
+vim.keymap.set('n', '<leader>nt', function()
+    vim.cmd.Neotree('toggle')
+end, { desc = "Toggle Neotree" })

@@ -16,7 +16,7 @@ return {
         require('mason-lspconfig').setup({
             -- Replace the language servers listed here
             -- with the ones you want to install
-            ensure_installed = { 'efm', 'eslint', 'emmet_ls', 'lua_ls', 'rust_analyzer', 'html', 'tailwindcss' },
+            ensure_installed = { 'efm', 'vtsls', 'eslint', 'emmet_ls', 'lua_ls', 'rust_analyzer', 'html', 'tailwindcss' },
         })
     end
 }
