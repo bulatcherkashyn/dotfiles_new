@@ -19,8 +19,6 @@ local plugins = {
     require("plugins.mason"),
     require("plugins.surround"),
     require("plugins.trouble"),
-    require("plugins.neodev"),
-    require("plugins.lspconfig"),
     {
         "lukas-reineke/indent-blankline.nvim",
         opts = {},
@@ -60,6 +58,9 @@ local plugins = {
             "antoinemadec/FixCursorHold.nvim",
             "nvim-treesitter/nvim-treesitter"
         }
+    },
+    {
+        'b0o/schemastore.nvim',
     },
     require("plugins.claude"),
 

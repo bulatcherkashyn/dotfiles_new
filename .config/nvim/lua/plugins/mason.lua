@@ -1,8 +1,5 @@
 return {
     "williamboman/mason.nvim",
-    dependencies = {
-        "williamboman/mason-lspconfig.nvim",
-    },
     config = function()
         require('mason').setup({
             ui = {
@@ -12,11 +9,6 @@ return {
                     package_uninstalled = "✗"
                 }
             }
-        })
-        require('mason-lspconfig').setup({
-            -- Replace the language servers listed here
-            -- with the ones you want to install
-            ensure_installed = { 'efm', 'vtsls', 'eslint', 'emmet_ls', 'lua_ls', 'rust_analyzer', 'html', 'tailwindcss' },
         })
     end
 }
