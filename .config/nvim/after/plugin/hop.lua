@@ -1,1 +1,1 @@
-vim.keymap.set('n', '<leader>hw', vim.cmd.HopWord, {})
+vim.keymap.set("n", "<leader>hw", vim.cmd.HopWord, {})
