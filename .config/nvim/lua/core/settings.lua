@@ -8,8 +8,6 @@ vim.opt.nu = true
 --vim.opt.expandtab = false
 --vim.opt.smartindent = true
 
---vim.api.nvim_set_option("clipboard", "unnamed")
-
 vim.o.tabstop = 4
 vim.bo.tabstop = 4
 vim.o.showtabline = 4
@@ -57,6 +55,33 @@ vim.opt.mousescroll = "ver:0,hor:0"
 --vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
 --vim.o.foldlevelstart = 99
 --vim.o.foldenable = true
+
+vim.opt.cursorline = true
+vim.opt.cursorcolumn = true
+-- Цвет фона текущей строки
+
+
+vim.api.nvim_set_hl(0, 'CursorLine', { bg = '#2a2a2a' })
+vim.api.nvim_set_hl(0, 'CursorLineNr', { fg = '#d7af5f', bold = true })
+
+-- Цвет колонки курсора
+vim.api.nvim_set_hl(0, 'CursorColumn', { bg = '#2d2d2d' })
+
+-- Подсветка строки с прозрачным фоном (только подчеркивание)
+vim.opt.cursorline = true
+vim.api.nvim_set_hl(0, 'CursorLine', { underline = true })
+
+-- Отключить подсветку в insert mode (для производительности)
+vim.api.nvim_create_autocmd('InsertEnter', {
+    callback = function()
+        vim.opt.cursorline = false
+    end
+})
+vim.api.nvim_create_autocmd('InsertLeave', {
+    callback = function()
+        vim.opt.cursorline = true
+    end
+})
 
 --vim.opt.foldmethod = "expr"
 --vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"

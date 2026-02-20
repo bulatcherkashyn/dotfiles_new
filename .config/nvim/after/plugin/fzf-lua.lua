@@ -2,3 +2,5 @@ vim.keymap.set("n", "<leader>ff", require('fzf-lua').files, { desc = "Fzf Files"
 vim.keymap.set("n", "<leader>fg", require('fzf-lua').live_grep, { desc = "Fzf Grep" })
 vim.keymap.set("n", "<leader>fb", require('fzf-lua').buffers, { desc = "Fzf Buffers" })
 vim.keymap.set("n", "<leader>fh", require('fzf-lua').help_tags, { desc = "Fzf Help" })
+vim.keymap.set("n", "<leader>fm", require('fzf-lua').marks, { desc = "Fzf Marks" })
+vim.keymap.set("n", "<leader>fr", require('fzf-lua').resume, { desc = "Fzf Lua Resume" })
